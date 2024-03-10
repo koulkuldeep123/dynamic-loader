@@ -61,7 +61,7 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
 
     }, []);
 
-    //scroll loading
+    //storing in store and end scroll loading
     useEffect(() => {
         if(data){
             if(data.length===0 && isLoadingMore){
@@ -86,9 +86,9 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
         if(!loading && isLoadingMore){
             setIsLoadingMore(false);
         }
-    },[loading]);
+    },[isLoadingMore, loading]);
 
-    //update page
+    //update page index
     useEffect(() => {
         if (page > 1 && scrollingApi && !loadedPage.includes(page)) {
             fetchData(getUrl);

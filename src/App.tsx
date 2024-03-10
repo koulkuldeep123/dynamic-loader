@@ -23,7 +23,7 @@ const App: React.FC = () => {
             <Router>
                 <NavBar/>
                 <Routes>
-                    <Route path="/" element={<Dashboard favorites={favorites} toggleFavorite={toggleFavorite} />} />
+                    <Route path="/" element={<Dashboard favorites={favorites} />} />
                     <Route path="/list" element={<List favorites={favorites} toggleFavorite={toggleFavorite}/>} />
                 </Routes>
             </Router>
