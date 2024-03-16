@@ -36,7 +36,7 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
     //scroll handling on window object
     const handleScroll = useCallback(debounce(() => {
         if (
-            window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+            window.innerHeight + window.scrollY+1 >= document.body.offsetHeight &&
             (!loading || !isLoadingMore)
         ) {
             setIsLoadingMore(true);
@@ -96,12 +96,6 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
         }
     }, [data]);
 
-    useEffect(()=>{
-        if(!loading && isLoadingMore){
-            setIsLoadingMore(false);
-        }
-    },[isLoadingMore, loading]);
-
     //update page index
     useEffect(() => {
         if (page > 1 && scrollingApi && !loadedPage.includes(page)) {
@@ -125,8 +119,7 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
                     </button>
                 </div>
             ))}
-            {(loading || isLoadingMore) && pageStored && <div className="loader-container"><Loader /></div>}
-            {isLoadingMore && <div className="loader-container"><Loader /></div>}
+            {(loading && pageStored) || (loading && isLoadingMore) && <div className="loader-container"><Loader /></div>}
         </div>
     );
 };
