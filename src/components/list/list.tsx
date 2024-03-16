@@ -124,4 +124,4 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
     );
 };
 
-export default List;
+export default React.memo(List);

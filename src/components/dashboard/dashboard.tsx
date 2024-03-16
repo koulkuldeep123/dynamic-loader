@@ -19,4 +19,4 @@ const Dashboard: React.FC<DashboardProps> = ({ favorites }) => {
     );
 };
 
-export default Dashboard;
+export default React.memo(Dashboard);

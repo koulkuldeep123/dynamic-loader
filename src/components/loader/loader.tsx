@@ -8,4 +8,4 @@ const Loader: React.FC = () => {
         </div>
     );
 };
-export default Loader;
+export default React.memo(Loader);
