@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom';
 import {ListProps, Item} from '../common-type.ts';
@@ -20,10 +20,23 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
     const {pages,pageIndex} = useSelector((state:RootState)=>state.list);
     const pageStored = Object.keys(pages).length === 0;
 
+    //added debounce function to avoid multiple scroll events
+    const debounce = useCallback((func:(...args:object[])=>void, wait:number) => {
+        let timeout: NodeJS.Timeout;
+        return function executedFunction(...args:object[]) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },[]);
+
     //scroll handling on window object
-    const handleScroll = () => {
+    const handleScroll = useCallback(debounce(() => {
         if (
-            window.innerHeight + window.scrollY+1 >= document.body.offsetHeight &&
+            window.innerHeight + window.scrollY >= document.body.offsetHeight &&
             (!loading || !isLoadingMore)
         ) {
             setIsLoadingMore(true);
@@ -31,7 +44,7 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
         }else{
             setIsLoadingMore(false);
         }
-    };
+    },500),[loading, isLoadingMore, debounce]);
 
     //add scroll when loading
     useEffect(() => {
@@ -39,7 +52,7 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [isLoadingMore, loading]);
+    }, [handleScroll]);
 
     //first on load
     useEffect(() => {
@@ -64,7 +77,7 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
     //storing in store and end scroll loading
     useEffect(() => {
         if(data){
-            if(data.length===0 && isLoadingMore){
+            if(data.length===0 && !loading){
                 setScrollingApi(false);
                 setIsLoadingMore(false);
                 return;
@@ -77,8 +90,9 @@ const List: React.FC<ListProps> = ({ favorites, toggleFavorite }) => {
                 dispatch(storePageIndex(page));
                 dispatch(storePageData({page,data}));
             }
-            // if (pages[pageIndex] && pages[pageIndex].length>0) {
-            // }
+            else {
+                setIsLoadingMore(false);
+            }
         }
     }, [data]);
 
